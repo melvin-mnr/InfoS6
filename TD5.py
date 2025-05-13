@@ -1,19 +1,23 @@
-from tkinter import Tk, Canvas, Button
+from tkinter import Tk, Canvas, Button,Label
 import random
 
-root=Tk()
-can = Canvas(root, width=1000,height=500,bg='light grey')
-can.grid(column=0, row=0, columnspan=1)
 couleur=['black','red','blue','green','yellow','orange']
-tableau=[1,2,0,0]
-n=4
+tableau=[1,2,0,0,3,4,5,0,4,5,0,0,0]
+n=7
+
+root=Tk()
+can = Canvas(root, width=1000,height=500,bg='whitesmoke')
+can.grid(column=0, row=0, columnspan=2)
+root.update()
+W=root.winfo_width()
+H=root.winfo_height()
 
 def read_word(canva, mot, h, w,y,col):
     x=0
     for i in mot :
         if i=='H':
-            canva.create_line(x,y,x+h,y,fill=col)
-            x,y=x+h,y
+            canva.create_line(x,y,x+w,y,fill=col)
+            x,y=x+w,y
         if i=='U':
             canva.create_line(x,y,x+w,y-h,fill=col)
             x,y=x+w,y-h
@@ -23,23 +27,23 @@ def read_word(canva, mot, h, w,y,col):
     return
 
 def entrelacs_mots(canva,liste,n):
-    y=50
-    h=50
+    y=0
+    h=H/(n+1)
+    w=W/(2*len(liste)+1)
     for i in range(n):
         #i la position initiale de la ligne, j sa position au fil des entrelacs, k la position de la ligne qui doit croiser avec la k+1 ème
         mot='H'
         j=i
         for k in liste :
             if j==k :
-                mot+='D'
+                mot+='DH'
                 j+=1
             elif j==k+1:
-                mot+='U'
+                mot+='UH'
                 j-=1
             else :
-                mot+='H'
-            mot+='H'
-            read_word(canva,mot,h,h,y+h*i,couleur[i%len(couleur)])
+                mot+='HH'
+            read_word(canva,mot,h,w,y+h*(i+1),couleur[i%len(couleur)])
     return
 
 
@@ -77,11 +81,16 @@ def permute():
     entrelacs_mots(can,tableau,n)
 
 but1 = Button(root, text ='Quit', command = root.destroy)
-but1.grid(column=0,row=1,ipadx=10,sticky='E')
+but1.grid(column=0,row=2,padx=10,ipadx=30,sticky='E')
 
 but2=Button(root, text='Colors', command=permute)
-but2.grid(column=1,row=1,padx=10,sticky='W')
+but2.grid(column=1,row=2,padx=10,ipadx=25,sticky='W')
+
+mot1= Label(root, text='Croisements :')
+mot1.grid(column=0,row=1,padx=19,sticky='E')
+
+mot2=Label(root,text=str(tableau))
+mot2.grid(column=1,row=1,padx=10,sticky='W')
 
 entrelacs_mots(can,tableau,n)
-
 root.mainloop()
