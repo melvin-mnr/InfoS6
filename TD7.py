@@ -6,7 +6,7 @@ class App :
         self.root=Tk()
         self.data=data
         self.canva=Canvas(self.root,width=600 ,height=600 ,bg='whitesmoke')
-        self.canva.grid(column=0, row=0, columnspan=2)
+        self.canva.grid(column=0, row=0, columnspan=1)
 
     def draw(self):
         self.canva.delete('all')
@@ -20,7 +20,7 @@ class App :
             i+=1
 
         but1 = Button(self.root, text ='Quit', command = self.root.destroy)
-        but1.grid(column=0,row=2,padx=10,sticky='E')
+        but1.grid(column=0,row=1)
 
         self.root.bind('<f>',lambda e : self.update())
         return
@@ -52,22 +52,33 @@ class Data :
                 direction=( (self.pos[i][0]-self.pos[j][0])/distance , (self.pos[i][1]-self.pos[j][1])/distance )
                 t.append((distance,direction))
             T.append(t)
-
+        #pour chaque sommet on parcours ses voisins et on applique une méthode d'Euler pour connaitre l'accéleration que chaqun lui confère, puis la position résultante
         for i in range(len(self.graph)):
             for j in range(len(self.graph[i])):
                 dt=10**(-2)
                 dvx = -k*(T[i][j][0]-l)*T[i][j][1][0]*dt/m
                 dvy = -k*(T[i][j][0]-l)*T[i][j][1][1]*dt/m
                 self.vit[i]=(self.vit[i][0]+dvx,self.vit[i][1]+dvy)
-                dx = self.vit[i][0]*dt
-                dy = self.vit[i][1]*dt
-                self.pos[i]=(self.pos[i][0]+dx,self.pos[i][1]+dy)
+                x = self.pos[i][0] + self.vit[i][0]*dt
+                y = self.pos[i][1] + self.vit[i][1]*dt
+        #on contraint les sommets à rester dans le canva
+                if x <0:
+                    x=0
+                    self.vit[i]=(-self.vit[i][0]*3/4,self.vit[i][1])
+                elif x >600:
+                    x=600
+                    self.vit[i]=(-self.vit[i][0]*3/4,self.vit[i][1])
+                if y <0:
+                    y=0
+                    self.vit[i]=(self.vit[i][0],-self.vit[i][1]*3/4)
+                if y >600:
+                    y=600
+                    self.vit[i]=(self.vit[i][0],-self.vit[i][1]*3/4)
+                self.pos[i]=(x,y)
         return
 
-
-
 k=10
-l=150
+l=10
 m=1
 a=[[2, 7, 3], [3, 4, 9, 10], [5, 8, 0], [10, 1, 4, 6, 0],[3, 1, 6], [2], [3, 10, 4], [0], [2], [10, 1], [3, 1, 6, 9]]
 b=Data(a)
